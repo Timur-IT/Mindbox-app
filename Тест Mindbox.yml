@@ -1,0 +1,232 @@
+# Создание application. Манифест  файл
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-app-deployment  # Уникальное имя деплоймента
+spec:
+  replicas: 12  # Общее количество реплик (4 реплики на каждую из 3 зон)
+  strategy:
+    type: RollingUpdate  # Используем стратегию пошагового обновления
+    rollingUpdate:
+      maxSurge: 25%  # Максимальное увеличение количества подов при обновлении (25%)
+      maxUnavailable: 1  # Максимальное количество недоступных подов во время обновления
+
+  template:
+    metadata:
+      labels:
+        app: your-app  # Метка для идентификации приложения
+    spec:
+      containers:
+        - name: your-app-container  # Имя контейнера
+          image: your-app-image:latest  # Образ контейнера
+          resources:
+            limits:
+              cpu: "1"  # Лимиты для ресурсов (CPU)
+            requests:
+              cpu: "0.1"  # Запросы для ресурсов (CPU)
+              memory: "128Mi"  # Запросы для ресурсов (память)
+
+          readinessProbe:  # Проверка готовности
+            httpGet:
+              path: /healthz  # Путь для проверки готовности
+              port: 80  # Порт для проверки готовности
+            initialDelaySeconds: 10  # Задержка перед началом проверки
+            periodSeconds: 5  # Периодичность проверки
+
+          livenessProbe:  # Проверка живости
+            httpGet:
+              path: /healthz  # Путь для проверки живости
+              port: 80  # Порт для проверки живости
+            initialDelaySeconds: 15  # Задержка перед началом проверки
+            periodSeconds: 10  # Периодичность проверки
+
+          lifecycle:
+            preStop:  # Действие перед остановкой контейнера
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]  # Команда для выполнения перед остановкой
+
+# Добавляем аннотации для указания зон
+annotations:
+  node.kubernetes.io/zone: us-west1-a  # Зона 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-app-deployment-zone2  # Уникальное имя деплоймента для Зоны 2
+spec:
+  replicas: 12  # Общее количество реплик (4 реплики на каждую из 3 зон)
+  strategy:
+    type: RollingUpdate  # Используем стратегию пошагового обновления
+    rollingUpdate:
+      maxSurge: 25%  # Максимальное увеличение количества подов при обновлении (25%)
+      maxUnavailable: 1  # Максимальное количество недоступных подов во время обновления
+
+  template:
+    metadata:
+      labels:
+        app: your-app  # Метка для идентификации приложения
+    spec:
+      containers:
+        - name: your-app-container  # Имя контейнера
+          image: your-app-image:latest  # Образ контейнера
+          resources:
+            limits:
+              cpu: "1"  # Лимиты для ресурсов (CPU)
+            requests:
+              cpu: "0.1"  # Запросы для ресурсов (CPU)
+              memory: "128Mi"  # Запросы для ресурсов (память)
+
+          readinessProbe:  # Проверка готовности
+            httpGet:
+              path: /healthz  # Путь для проверки готовности
+              port: 80  # Порт для проверки готовности
+            initialDelaySeconds: 10  # Задержка перед началом проверки
+            periodSeconds: 5  # Периодичность проверки
+
+          livenessProbe:  # Проверка живости
+            httpGet:
+              path: /healthz  # Путь для проверки живости
+              port: 80  # Порт для проверки живости
+            initialDelaySeconds: 15  # Задержка перед началом проверки
+            periodSeconds: 10  # Периодичность проверки
+
+          lifecycle:
+            preStop:  # Действие перед остановкой контейнера
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]  # Команда для выполнения перед остановкой
+
+# Добавляем аннотации для указания зон
+annotations:
+  node.kubernetes.io/zone: us-west1-b  # Зона 2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-app-deployment-zone3  # Уникальное имя деплоймента для Зоны 3
+spec:
+  replicas: 12  # Общее количество реплик (4 реплики на каждую из 3 зон)
+  strategy:
+    type: RollingUpdate  # Используем стратегию пошагового обновления
+    rollingUpdate:
+      maxSurge: 25%  # Максимальное увеличение количества подов при обновлении (25%)
+      maxUnavailable: 1  # Максимальное количество недоступных подов во время обновления
+
+  template:
+    metadata:
+      labels:
+        app: your-app  # Метка для идентификации приложения
+    spec:
+      containers:
+        - name: your-app-container  # Имя контейнера
+          image: your-app-image:latest  # Образ контейнера
+          resources:
+            limits:
+              cpu: "1"  # Лимиты для ресурсов (CPU)
+            requests:
+              cpu: "0.1"  # Запросы для ресурсов (CPU)
+              memory: "128Mi"  # Запросы для ресурсов (память)
+
+          readinessProbe:  # Проверка готовности
+            httpGet:
+              path: /healthz  # Путь для проверки готовности
+              port: 80  # Порт для проверки готовности
+            initialDelaySeconds: 10  # Задержка перед началом проверки
+            periodSeconds: 5  # Периодичность проверки
+
+          livenessProbe:  # Проверка живости
+            httpGet:
+              path: /healthz  # Путь для проверки живости
+              port: 80  # Порт для проверки живости
+            initialDelaySeconds: 15  # Задержка перед началом проверки
+            periodSeconds: 10  # Периодичность проверки
+
+          lifecycle:
+            preStop:  # Действие перед остановкой контейнера
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]  # Команда для выполнения перед остановкой
+
+# Добавляем аннотации для указания зон
+annotations:
+  node.kubernetes.io/zone: us-west1-c  # Зона 3
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Другой вариант манифест файла.
+# Конфиг файл для поднятия кластера в AWS.
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name  : jtrit-cluster
+  region: us-west-1
+
+vpc:
+ id     : "vpc-0b6d22b51c5fb22b5"
+ subnets:
+   public:
+      us-west-1a: { id: subnet-039fc2b104ddb9472 }  # For Load Balancer
+      us-west-1b: { id: subnet-01940287d1c617f7c }  # For Load Balancer
+   private:
+      us-west-1a: { id: subnet-0e5a0c43112216b89 }  # For Worker Nodes
+      us-west-1b: { id: subnet-04b4216e7f2adac45 }  # For Worker Nodes
+
+nodeGroups:
+  - name             : worker
+    instanceType     : t2.micro
+    desiredCapacity  : 5
+    privateNetworking: true 
+
+# Создание 1 Deployment с HorizontalPodAutoscaler.
+
+apiVersion : apps/v1
+kind: Deployment                                  # Тип создаваемого ресурса. Создаем Deployment
+metadata:
+  name: my-web-deployment-autoscaling             # Название Deployment
+  labels:                                         # Устанавливаем метки для Deployment! Обязательно.
+    app  : my-k8s-application
+    env  : prod
+    owner: TimurJafarov
+spec:                                             # С какими подами будет работать наш Deployment.
+  selector:
+    matchLabels:
+      project: myproject-3                        # Поды с названием  myproject-3 будет работать наш Deployment. project: myproject-3 должно сответствовать project: myproject-3 в блоке template
+  template:                                       # Весь template: это описание пода
+    metadata:
+      labels:
+        project: myproject-3                      # Под с названием  myproject-3 должен сответствовать project: myproject-3 в блоке spec:
+    spec:                                         # это описание контейнера
+      containers:
+        - name : myproject-3-web                  # название контейнера
+          image: timurit/k8sphp:version1          # используемый image.При этом можем изменить image на другой timurit/k8sphp:latest и запустить команду kubectl apply -f deployment-3-autoscaling.yaml
+          ports:
+            - containerPort: 80   
+
+
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler                     # Тип создаваемого ресурса. Создаем HorizontalPodAutoscaler 
+metadata:
+  name: my-autoscaling                            # Название HorizontalPodAutoscaler
+spec:                                             # Описание параметров autoscaling
+  scaleTargetRef:                                 # Какой объект будет автомасштабироваться. У нас Deployment.
+    apiVersion: apps/v1                           # Версия Deployment. Должно сответствовать блоку Deployment. 
+    kind: Deployment                              # Тип  ресурса,который будет автомасштабироваться. 
+    name: my-web-deployment-autoscaling           # Название Deployment. Должно сответствовать блоку Deployment. 
+  minReplicas: 4                                  # миннимум replicas
+  maxReplicas: 6                                  # максимум replicas
+  metrics:                                        # параметры масштабирования
+  - type: Resource
+    resource:
+      name: cpu
+      target:                                     
+        type: Utilization
+        averageUtilization: 70                    # При достижении cpu Utilization  в среднем 70% на всех pods,масштабировать/добавлять pods. И при ниже 70% убавить pods
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80                    # При достижении memory Utilization  в среднем 80% на всех pods,масштабировать/добавлять pods. И при ниже 80% убавить pods
+
+
